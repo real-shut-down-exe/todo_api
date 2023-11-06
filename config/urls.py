@@ -19,6 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/', include('apps.user.urls')),
+    path('user/', include('apps.user.urls')),
+    path('todo/', include('apps.todo.urls')),
     path('swagger/', include('apps.swagger.urls'))
 ]
