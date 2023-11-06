@@ -1,10 +1,6 @@
 from django.urls import path
-from apps.todo.views import TodoControllers
+from rest_framework import routers
+from apps.todo.views import TodoViewset
 
-urlpatterns = [
-    path('multipleget/',TodoControllers.MultipleGet, name='MultipleGet'),
-    path('singleget/<int:pk>/',TodoControllers.SingleGet, name='SingleGet'),
-    path('add/',TodoControllers.Add, name='Add'),
-    path('update/<int:pk>/',TodoControllers.Update, name='Update'),
-    path('delete/<int:pk>/',TodoControllers.Delete, name='Delete'),
-]
+router = routers.DefaultRouter()
+router.register('todo', TodoViewset)
