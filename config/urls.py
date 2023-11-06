@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('apps.user.urls')),
     path('api/', include(router.urls)),
-    path('api/swagger/', include('apps.swagger.urls'))
+    path('', include('apps.swagger.urls'))
 ]
