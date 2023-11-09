@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'apps.user',
 ]
 
-AUTH_USER_MODEL = "user.User" 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -195,3 +194,7 @@ SWAGGER_SETTINGS = {
       }
    }
 }
+
+
+
+AUTH_USER_MODEL = 'user.User'
