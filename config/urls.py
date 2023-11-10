@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from apps.todo.urls import router
 from apps.user.urls import routerUrl
+from apps.connectionRequest.urls import routerConnectionRequest
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(routerUrl.urls)),
     path('api/', include(router.urls)),
+    path('api/', include(routerConnectionRequest.urls)),
     path('', include('apps.swagger.urls'))
 ]

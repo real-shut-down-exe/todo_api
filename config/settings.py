@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.todo',
     'apps.swagger',
     'apps.user',
+    'apps.connectionRequest',
 ]
 
 MIDDLEWARE = [
