@@ -22,8 +22,8 @@ from apps.connectionRequest.urls import routerConnectionRequest
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(routerUrl.urls)),
     path('api/', include(router.urls)),
+    path('api/', include(routerUrl.urls)),
     path('api/', include(routerConnectionRequest.urls)),
     path('', include('apps.swagger.urls'))
 ]

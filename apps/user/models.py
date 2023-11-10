@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.response import Response
 
 class User(models.Model):
     USER_TYPE = [
@@ -24,3 +25,9 @@ class User(models.Model):
         if self.created_by:
             return self.created_by.mail
         return None
+    
+    def check_password(self, raw_password):
+        if self.password == raw_password:
+            return Response({'error': 'E-posta ve parola gerekli alanlardır.'}, status=200)
+        else:
+            return Response({'error': 'E-posta ve parola gerekli alanlardır.'}, status=400)

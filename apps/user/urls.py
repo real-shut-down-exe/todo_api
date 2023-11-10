@@ -4,3 +4,5 @@ from .views import UserViewset
 
 routerUrl = routers.DefaultRouter()
 routerUrl.register('user', UserViewset)
+
+
