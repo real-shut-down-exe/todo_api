@@ -1,16 +1,26 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from apps.user.custom_user_manager import CustomUserManager
-from django.utils.translation import gettext_lazy as _
 
+class User(models.Model):
+    USER_TYPE = [
+        ("Admin", "Admin"),
+        ("User", "User"),
+    ]
 
-class User(AbstractUser):
-    user_name = None
-    email = models.EmailField(_("email address"), unique=True)
-    USERNAME_FIELD = "email"
-    objects = CustomUserManager()
-    REQUIRED_FIELDS = []
+    mail = models.CharField(max_length=255, unique=True)
+    password = models.CharField(max_length=255)
+    created_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_deleted = models.BooleanField(default=False)
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPE,
+        default="User",
+    )
 
     def __str__(self):
-        return self.email
-    
+        return self.mail
+
+    def get_created_by_mail(self):
+        if self.created_by:
+            return self.created_by.mail
+        return None

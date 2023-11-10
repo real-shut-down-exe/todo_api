@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from apps.todo.urls import router
+from apps.user.urls import routerUrl
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/user/', include('apps.user.urls')),
+    path('api/', include(routerUrl.urls)),
     path('api/', include(router.urls)),
     path('', include('apps.swagger.urls'))
 ]
