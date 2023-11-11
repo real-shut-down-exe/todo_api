@@ -28,6 +28,8 @@ class User(models.Model):
     
     def check_password(self, password, mail):
         if self.password == password and self.mail == mail:
-            return Response(status=200)
+            # return Response(status=200)
+            return Response(True, status=200)
+        
         else:
             return Response(status=400)

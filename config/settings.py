@@ -204,5 +204,6 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:4200",
+    "http://localhost:4200",  # Your frontend URL
+    "http://localhost:8000",  # Your Django development server
 ]
