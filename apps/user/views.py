@@ -26,7 +26,11 @@ class UserViewset(viewsets.ModelViewSet):
             user = User.objects.get(mail=mail).check_password(password, mail)
 
             if user.status_code == 200:
-                return Response({'Wellcome'}, status=200)
+                user_data = {
+                    'mail': user.data.mail,
+                    'pk': user.data.pk,
+                    }
+                return Response(user_data, status=200)
             else:
                 return Response({'error': 'Try with valid Email or Password.'}, status=400)
             
@@ -49,7 +53,13 @@ class UserViewset(viewsets.ModelViewSet):
             if user is None:
                 new_user = User(mail=mail, password=password)
                 new_user.save()
-                return Response({'success': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+
+                user_data = {
+                    'mail': mail,
+                    'pk': new_user.pk,
+                    }
+                
+                return Response(user_data, status=status.HTTP_201_CREATED)
             else:
                 return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=400)
             
