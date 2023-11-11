@@ -26,8 +26,8 @@ class User(models.Model):
             return self.created_by.mail
         return None
     
-    def check_password(self, raw_password):
-        if self.password == raw_password:
-            return Response({'error': 'E-posta ve parola gerekli alanlardır.'}, status=200)
+    def check_password(self, password, mail):
+        if self.password == password and self.mail == mail:
+            return Response(status=200)
         else:
-            return Response({'error': 'E-posta ve parola gerekli alanlardır.'}, status=400)
+            return Response(status=400)
