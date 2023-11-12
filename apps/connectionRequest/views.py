@@ -89,7 +89,7 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
         
 
     @action(detail=False, methods=['post'])
-    def HaveAnAcceptConnections(self, request, *args, **kwargs):
+    def HaveAnAcceptConnections(self, request):
         try:
             senderMail = request.data.get('sender', None)
             senderDataList = ConnectionRequest.objects.filter(sender=senderMail, is_accepted=True)
@@ -102,3 +102,27 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                 return Response(True, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # have a request?
+    
+    @action(detail=False, methods=['post'])
+    def HaveAnyRequest(self, request):
+        try:
+            receiverMail = request.data.get('receiver', None)
+            receiverDataList = ConnectionRequest.objects.filter(receiver=receiverMail, is_accepted=False)
+
+            result_list = []
+
+            if not receiverDataList.exists():
+                return Response({'error': 'There is no such record in the system.'}, status=status.HTTP_200_OK)
+            else:
+                for receiverData in receiverDataList:
+                    result_list.append({
+                        'sender': receiverData.sender,
+                        'is_accepted': receiverData.is_accepted,
+                    })
+
+                return Response(result_list, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_200_OK)
+        
