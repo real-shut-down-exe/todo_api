@@ -6,15 +6,15 @@ from rest_framework import status
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
 
+
 class TodoViewset(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=["post"])
     def get_all_todo_by_id(self, request):
-
         try:
-            pk = request.data.get('created_by')
+            pk = request.data.get("created_by")
 
             todos = Todo.objects.filter(created_by=pk)
             todo_list = []
@@ -23,15 +23,18 @@ class TodoViewset(viewsets.ModelViewSet):
                 pass
                 for todo in todos:
                     todo_info = {
-                    "title": todo.title,
-                    "is_deleted": todo.is_deleted,
-                    "pk": todo.pk,
-                    "created_at": todo.created_at
+                        "title": todo.title,
+                        "is_deleted": todo.is_deleted,
+                        "pk": todo.pk,
+                        "created_at": todo.created_at,
                     }
                     todo_list.append(todo_info)
             else:
                 pass
             return Response(todo_list, status=status.HTTP_200_OK)
-            
+
         except Exception as e:
-            return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=400)
+            return Response(
+                {"error": "Your password or email is incorrect or this mail is in use"},
+                status=400,
+            )

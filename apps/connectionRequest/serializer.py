@@ -8,3 +8,6 @@ class ConnectionRequestSerializer(serializers.ModelSerializer):
 
 class MyCustomSerializer(serializers.Serializer):
     sender = serializers.CharField()
+
+class ReceiverSerializer(serializers.Serializer):
+    receiver = serializers.CharField()

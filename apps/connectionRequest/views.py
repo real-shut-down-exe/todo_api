@@ -3,14 +3,13 @@ from apps.todo.models import Todo
 import json
 from apps.user.models import User
 from .models import ConnectionRequest
-from .serializer import ConnectionRequestSerializer, MyCustomSerializer
+from .serializer import ConnectionRequestSerializer, MyCustomSerializer, ReceiverSerializer
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.serializers import serialize 
+from django.core.serializers import serialize
 from django.http import JsonResponse
-
 
 
 class ConnectionRequestViewset(viewsets.ModelViewSet):
@@ -147,8 +146,7 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # have a request?
-
+    @swagger_auto_schema(request_body=ReceiverSerializer)
     @action(detail=False, methods=["post"])
     def HaveAnyRequest(self, request):
         try:
@@ -161,17 +159,17 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
 
             if not receiverDataList.exists():
                 return Response(
-                    {"error": "There is no such record in the system."},
-                    status=status.HTTP_200_OK,
+                    status=status.HTTP_204_NO_CONTENT,
                 )
             else:
                 for receiverData in receiverDataList:
-                    result_list.append(
-                        {
+                    sender_exists = any(item["sender"] == receiverData.sender for item in result_list)
+
+                    if not sender_exists:
+                        result_list.append({
                             "sender": receiverData.sender,
-                            "is_accepted": receiverData.is_accepted,
-                        }
-                    )
+                            "pk": receiverData.pk
+                            })
 
                 return Response(result_list, status=status.HTTP_200_OK)
         except Exception as e:
@@ -199,9 +197,11 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
             else:
                 for senderData in senderDataList:
                     receiver_email = senderData.receiver
-                    
-                    receiver_user_data = serialize('json', [User.objects.get(mail=receiver_email)])
-                    receiver_user = json.loads(receiver_user_data)[0]['pk']
+
+                    receiver_user_data = serialize(
+                        "json", [User.objects.get(mail=receiver_email)]
+                    )
+                    receiver_user = json.loads(receiver_user_data)[0]["pk"]
                     receiver_todos = Todo.objects.filter(created_by=receiver_user)
 
                     response_data = {
@@ -225,7 +225,45 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                     receiver_result_dict,
                     status=status.HTTP_200_OK,
                 )
-            
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+    @action(detail=False, methods=["post"])
+    def updateConnectionRequest(self, request):
+        try:
+            # Get the primary key from the request data
+            connection_request_pk = request.data.get("pk")
+
+            # Get the ConnectionRequest object based on the primary key
+            connection_request = ConnectionRequest.objects.get(pk=connection_request_pk)
+
+            # Get sender and receiver data from the request
+            sender_mail = request.data.get("sender")
+            receiver_mail = request.data.get("receiver")
+
+            # Get or create User objects for sender and receiver
+            sender_data, created = User.objects.get_or_create(mail=sender_mail)
+            receiver_data, created = User.objects.get_or_create(mail=receiver_mail)
+
+            # Update the ConnectionRequest fields with the new data
+            connection_request.is_accepted = request.data.get("is_accepted", connection_request.is_accepted)
+
+            # Save the updated ConnectionRequest object
+            connection_request.save()
+
+            return Response({"success": "ConnectionRequest updated successfully"})
+
+        except ConnectionRequest.DoesNotExist:
+            return Response(
+                {"error": "ConnectionRequest with the provided pk does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
         except Exception as e:
             return Response(
                 {"error": str(e)},
