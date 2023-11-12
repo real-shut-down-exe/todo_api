@@ -19,8 +19,8 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def sendARequest(self, request):
         try:
-            senderMail = request.data.get("sender", None)
-            receiverMail = request.data.get("receiver", None)
+            senderMail = request.data.get("receiver", None)
+            receiverMail = request.data.get("sender", None)
 
             senderData = User.objects.filter(mail=senderMail).first()
             receiverData = User.objects.filter(mail=receiverMail).first()
@@ -42,7 +42,7 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                     )
                 else:
                     new_user = ConnectionRequest(
-                        sender=senderData.mail, receiver=receiverData.mail
+                        sender=senderData.mail, receiver=receiverData.mail, is_accepted=False
                     )
                     new_user.save()
                     return Response(
@@ -236,24 +236,12 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"])
     def updateConnectionRequest(self, request):
         try:
-            # Get the primary key from the request data
             connection_request_pk = request.data.get("pk")
 
-            # Get the ConnectionRequest object based on the primary key
             connection_request = ConnectionRequest.objects.get(pk=connection_request_pk)
 
-            # Get sender and receiver data from the request
-            sender_mail = request.data.get("sender")
-            receiver_mail = request.data.get("receiver")
-
-            # Get or create User objects for sender and receiver
-            sender_data, created = User.objects.get_or_create(mail=sender_mail)
-            receiver_data, created = User.objects.get_or_create(mail=receiver_mail)
-
-            # Update the ConnectionRequest fields with the new data
             connection_request.is_accepted = request.data.get("is_accepted", connection_request.is_accepted)
 
-            # Save the updated ConnectionRequest object
             connection_request.save()
 
             return Response({"success": "ConnectionRequest updated successfully"})
@@ -269,3 +257,25 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                 {"error": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        
+    @action(detail=False, methods=["post"])
+    def deleteConnectionRequest(self, request):
+        try:
+            connection_request_pk = request.data.get("pk")
+            connection_request = ConnectionRequest.objects.get(pk=connection_request_pk)
+            connection_request.delete()
+
+            return Response({"success": "ConnectionRequest deleted successfully"})
+
+        except ConnectionRequest.DoesNotExist:
+            return Response(
+                {"error": "ConnectionRequest with the provided pk does not exist"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    
