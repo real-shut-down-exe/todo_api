@@ -5,4 +5,6 @@ class ConnectionRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConnectionRequest
         fields = '__all__'
-            
+
+class MyCustomSerializer(serializers.Serializer):
+    sender = serializers.CharField()
