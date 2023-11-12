@@ -36,3 +36,53 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                 
         except Exception as e:
             return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=False, methods=['post'])
+    def getAllConnectionByMail(self, request):
+        try:
+            senderMail = request.data.get('sender', None)
+            senderDataList = ConnectionRequest.objects.filter(sender=senderMail)
+
+            date_set = set()
+            result_list = []
+
+            if senderDataList == None:
+                return Response({'error': 'There is no such record in the system.'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if senderDataList.exists():
+                    for senderData in senderDataList:
+
+                        data_tuple = (senderData.sender, senderData.receiver, senderData.is_accepted)                       
+                        if data_tuple not in date_set:
+                            date_set.add(data_tuple)
+                            result_list.append({
+                                'sender': senderData.sender,
+                                'receiver': senderData.receiver,
+                                'is_accepted': senderData.is_accepted,
+                            })
+
+            return Response(result_list, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['post'])
+    def fetchSenderAcceptConnections(self, request):
+        try:
+            senderMail = request.data.get('sender', None)
+            senderDataList = ConnectionRequest.objects.filter(sender=senderMail, is_accepted=True)
+
+            result_list = []
+
+            if not senderDataList.exists():
+                return Response({'error': 'There is no such record in the system.'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                for senderData in senderDataList:
+                    result_list.append({
+                        'sender': senderData.sender,
+                        'receiver': senderData.receiver,
+                        'is_accepted': senderData.is_accepted,
+                    })
+
+                return Response(result_list, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
