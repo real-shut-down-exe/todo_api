@@ -86,3 +86,19 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
                 return Response(result_list, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    @action(detail=False, methods=['post'])
+    def HaveAnAcceptConnections(self, request, *args, **kwargs):
+        try:
+            senderMail = request.data.get('sender', None)
+            senderDataList = ConnectionRequest.objects.filter(sender=senderMail, is_accepted=True)
+
+            result_list = []
+
+            if not senderDataList.exists():
+                return Response(False, status=status.HTTP_200_OK)
+            else:
+                return Response(True, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': 'Your password or email is incorrect or this mail is in use'}, status=status.HTTP_400_BAD_REQUEST)
