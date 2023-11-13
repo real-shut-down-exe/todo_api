@@ -52,7 +52,7 @@ class TodoViewset(viewsets.ModelViewSet):
             )
         
     @action(detail=False, methods=["post"])
-    def AscTodo(self, request):
+    def AscTodo(self, request) :
         try:
             todos = Todo.objects.filter(created_by=1).order_by('-created_at')
             serializer = TodoSerializer(todos, many=True)
