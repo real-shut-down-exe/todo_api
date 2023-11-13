@@ -27,7 +27,7 @@ class ConnectionRequestViewset(viewsets.ModelViewSet):
 
             if senderData == None or receiverData == None:
                 return Response(
-                    {"error": "There is no such record in the system."},
+                    {"error": "Please enter a valid email address"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             else:
