@@ -38,3 +38,27 @@ class TodoViewset(viewsets.ModelViewSet):
                 {"error": "Your password or email is incorrect or this mail is in use"},
                 status=400,
             )
+        
+    @action(detail=False, methods=["post"])
+    def DescTodo(self, request):
+        try:
+            todos = Todo.objects.filter(created_by=1).order_by('created_at')
+            serializer = TodoSerializer(todos, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": "Your password or email is incorrect or this mail is in use"},
+                status=400,
+            )
+        
+    @action(detail=False, methods=["post"])
+    def AscTodo(self, request):
+        try:
+            todos = Todo.objects.filter(created_by=1).order_by('-created_at')
+            serializer = TodoSerializer(todos, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {"error": "Your password or email is incorrect or this mail is in use"},
+                status=400,
+            )
