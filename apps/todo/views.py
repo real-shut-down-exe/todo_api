@@ -25,7 +25,7 @@ class TodoViewset(viewsets.ModelViewSet):
                     todo_info = {
                         "title": todo.title,
                         "is_deleted": todo.is_deleted,
-                        "pk": todo.pk,
+                        "id": todo.pk,
                         "created_at": todo.created_at,
                     }
                     todo_list.append(todo_info)
